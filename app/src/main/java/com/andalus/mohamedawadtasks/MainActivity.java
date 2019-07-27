@@ -1,52 +1,59 @@
 package com.andalus.mohamedawadtasks;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements RecyclerViewAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity {
 
-    private RecyclerViewAdapter recyclerViewAdapter;
-    private AppData[] fakeData;
+
+    @BindView(R.id.editText)
+    EditText editText;
+    @BindView(R.id.button)
+    Button button;
+    @BindView(R.id.textView)
+    TextView textView;
+
+    private String text =null;
+    private final  static String ON_SAVE_KEY = "key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        RecyclerView recyclerView = findViewById(R.id.recycleView);
+        if(savedInstanceState != null){
+            text = savedInstanceState.getString(ON_SAVE_KEY);
+            textView.setText(text);
+        }
 
-        recyclerView.setLayoutManager(new GridLayoutManager(getApplicationContext(),
-                3, GridLayoutManager.VERTICAL,
-                false));
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-         fakeData = new AppData[]{
-                new AppData("Empires & Puzzles: RPG Quest",77,R.drawable.one, "App Information hehe!"),
-                new AppData("Sniper Arena: PvP Army Shooter",85,R.drawable.two , "App Information hehe!"),
-                new AppData("THE ALCHEMIST CODE",43,R.drawable.three , "App Information hehe!"),
-                new AppData("Tiles Hop: Forever Dancing Ball",33,R.drawable.four , "App Information hehe!"),
-                new AppData("Hungry Shark Evolution",97,R.drawable.five , "App Information hehe!"),
-                new AppData("Will Hero",74,R.drawable.six , "App Information hehe!"),
-                new AppData("Rolling Sky",68,R.drawable.seven ,"App Information hehe!"),
-                new AppData("Cooking Diary®: Best Tasty Restaurant & Cafe Game",305,R.drawable.eight ,"App Information hehe!"),
-                new AppData("Disc Pool Carrom",21,R.drawable.nine ,"App Information hehe!")
-        };
 
-        recyclerViewAdapter = new RecyclerViewAdapter(fakeData);
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerViewAdapter.setOnItemClickListener(MainActivity.this);
+                if(TextUtils.isEmpty(editText.getText())){
+                    Toast.makeText(MainActivity.this, "Add Text First :)", Toast.LENGTH_SHORT).show();
+                }else{
+                    text = editText.getText().toString().trim();
+                    textView.setText(text);
+                }
+            }
+        });
     }
 
     @Override
-    public void onItemClick(int position) {
-        AppData d = fakeData[position];
-        Intent intent = new Intent(MainActivity.this , AppDetails.class);
-        intent.putExtra("Name" , d.getAppName());
-        intent.putExtra("Size" , d.getAppSize());
-        intent.putExtra("Image" , d.getAppImage());
-        intent.putExtra("Description" , d.getAppDescription());
-        startActivity(intent);
+    public void onSaveInstanceState(Bundle save) {
+        super.onSaveInstanceState(save);
+        save.putString(ON_SAVE_KEY,text);
     }
+
 }
