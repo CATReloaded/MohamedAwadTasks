@@ -56,43 +56,73 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         //setupRecyclerView();
-       updateRecyclerView();
-       checkData();
+        updateRecyclerView();
+        checkData();
 
     }
 
-    void updateRecyclerView(){
-        if(users !=null) {
+    void updateRecyclerView() {
+        if (users != null) {
             users = db.usersDao().getAll();
             recyclerAdapter.setData(users);
         }
     }
 
-    void checkData(){
+    void checkData() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String val = sharedPreferences.getString("eyeColor", "All");
         db = DatabaseApp.getInstance(this);
         if (val.equals("All")) {
             users = db.usersDao().getAll();
-            if(users.size() < 1){
+            if (users.size() < 1) {
                 recyclerView.setVisibility(View.GONE);
                 emptyText.setVisibility(View.VISIBLE);
                 emptyText.setText("No users yet... ");
-            }else{
+            } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyText.setVisibility(View.GONE);
             }
         } else {
             users = db.usersDao().findByEyeColor(val);
-            if(users.size() < 1){
+            if (users.size() < 1) {
                 recyclerView.setVisibility(View.GONE);
                 emptyText.setVisibility(View.VISIBLE);
-                emptyText.setText("No users with "+val + " color..");
-            }else{
+                emptyText.setText("No users with " + val + " eye color..");
+            } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 emptyText.setVisibility(View.GONE);
             }
         }
+        recyclerAdapter.setData(users);
+
+
+//        switch (val) {
+//            case "All":
+//                users = db.usersDao().getAll();
+//                if (users.size() < 1) {
+//                    recyclerView.setVisibility(View.GONE);
+//                    emptyText.setVisibility(View.VISIBLE);
+//                    emptyText.setText("No users yet... ");
+//                } else {
+//                    recyclerView.setVisibility(View.VISIBLE);
+//                    emptyText.setVisibility(View.GONE);
+//                }
+//                break;
+//            case "Blue":
+//            case "Green":
+//            case "Black":
+//            case "Brown":
+//                users = db.usersDao().findByEyeColor(val);
+//                if (users.size() <= 1) {
+//                    recyclerView.setVisibility(View.GONE);
+//                    emptyText.setVisibility(View.VISIBLE);
+//                    emptyText.setText("No users with " + val + " color..");
+//                } else {
+//                    recyclerView.setVisibility(View.VISIBLE);
+//                    emptyText.setVisibility(View.GONE);
+//                }
+//
+//        }
     }
 
     void setupRecyclerView() {

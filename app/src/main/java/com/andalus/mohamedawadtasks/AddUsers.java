@@ -35,8 +35,6 @@ public class AddUsers extends AppCompatActivity {
     String gender;
     String color;
 
-    RecyclerAdapter recyclerAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
