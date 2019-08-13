@@ -1,23 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <array name="GenderArray">
-        <item>Male</item>
-        <item>Female</item>
-    </array>
-
-    <array name="ColorArray">
-        <item>Black</item>
-        <item>Blue</item>
-        <item>Green</item>
-        <item>Brown</item>
-    </array>
-
-    <array name="ColorKeyArray">
-        <item>All</item>
-        <item>Black</item>
-        <item>Blue</item>
-        <item>Green</item>
-        <item>Brown</item>
-    </array>
+    <string-array name="spinnerItems">
+        <item>High</item>
+        <item>Medium</item>
+        <item>Low</item>
+    </string-array>
 </resources>

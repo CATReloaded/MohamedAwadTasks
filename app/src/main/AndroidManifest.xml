@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.andalus.mohamedawadtasks">
+
+    <uses-permission android:name="com.andalus.buildingacontentprovider.TERMS_READ" />
+    <uses-permission android:name="com.example.udacity.droidtermsexample.TERMS_READ" />
 
     <application
         android:allowBackup="true"
@@ -10,10 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".preference.PreferenceSettings"></activity>
-        <activity
-            android:name=".AddUsers"
-            android:parentActivityName=".MainActivity" />
+        <activity android:name=".AddNote"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
