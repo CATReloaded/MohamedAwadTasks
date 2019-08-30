@@ -1,93 +1,79 @@
 package com.andalus.mohamedawadtasks;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-import com.andalus.mohamedawadtasks.RecyclerView.RecyclerViewAdapter;
-import com.andalus.mohamedawadtasks.Repositories.ConstantsRepository;
-import com.andalus.mohamedawadtasks.ViewModel.NotesViewModel;
-import com.andalus.mohamedawadtasks.database.NoteEntity;
 
-import java.util.List;
+import com.andalus.mohamedawadtasks.mediaPlayer.ListOfMp3FromStorage;
+import com.andalus.mohamedawadtasks.services.MediaPlayerService;
+
+import static com.andalus.mohamedawadtasks.mediaPlayer.ListOfMp3FromStorage.mp3Files;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerViewAdapter recyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        FloatingActionButton fab = findViewById(R.id.fab);
+        checkPermission();
 
+    }
 
-        recyclerViewAdapter = new RecyclerViewAdapter(this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this
-                , LinearLayoutManager.VERTICAL
-                , false));
-        recyclerView.setAdapter(recyclerViewAdapter);
-
-        ConstantsRepository.mViewModel = ViewModelProviders.of(this).get(NotesViewModel.class);
-        ConstantsRepository.mViewModel.getAllNotes().observe(this, new Observer<List<NoteEntity>>() {
+    private void setupRecycler() {
+        ListOfMp3FromStorage.requestRead(this);
+        RecyclerView recyclerView = findViewById(R.id.RV);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.VERTICAL, false));
+        RecyclerViewAdapter rvAdapter = new RecyclerViewAdapter(this, mp3Files);
+        recyclerView.setAdapter(rvAdapter);
+        rvAdapter.setOnItemClickListener(new RecyclerViewAdapter.ClickListener() {
             @Override
-            public void onChanged(@Nullable List<NoteEntity> noteEntities) {
-                recyclerViewAdapter.setWord(noteEntities);
-            }
-        });
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this,AddNote.class);
-                i.putExtra("insert",0);
-                startActivity(i);
-            }
-        });
-
-        recyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.ClickListener()  {
-
-            @Override
-            public void onItemClick(View v, int position) {
-                Intent i = new Intent(MainActivity.this,AddNote.class);
-                NoteEntity word = recyclerViewAdapter.getWordAtPosition(position);
-                i.putExtra("HEAD",word.getHead());
-                i.putExtra("SUBJECT",word.getSubject());
-                i.putExtra("PRIORITY",word.getPriority());
-                i.putExtra("ID",word.getId());
-                i.putExtra("insert",1);
-                startActivity(i);
+            public void onItemClick(int pos, View v) {
+                Intent intent = new Intent(MainActivity.this, MediaPlayerService.class);
+                intent.setAction(MediaPlayerService.RUN_MEDIA_PLAYER);
+                MediaPlayerService.setPosition(pos);
+                startService(intent);
             }
         });
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_activity_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.deleteAll:
-            ConstantsRepository.mViewModel.deleteAllNotes();
-            Toast.makeText(this, "All Notes Deleted!", Toast.LENGTH_SHORT).show();
-            break;
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            setupRecycler();
+        } else {
+            checkPermission();
         }
-        return super.onOptionsItemSelected(item);
+
+
     }
+
+
+    private void checkPermission() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    MainActivity.this
+                    , new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}
+                    , 1);
+        } else {
+            setupRecycler();
+        }
+    }
+
+
 }
+
+
